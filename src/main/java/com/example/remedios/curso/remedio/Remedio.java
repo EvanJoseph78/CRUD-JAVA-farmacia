@@ -59,4 +59,8 @@ public class Remedio {
         this.ativo = false;
     }
 
+    public void reativar() {
+        this.ativo = true;
+    }
+
 }
