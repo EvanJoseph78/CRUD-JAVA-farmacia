@@ -19,6 +19,7 @@ import com.example.remedios.curso.controllers.DadosAtualizarRemedio;
 public class Remedio {
 
     public Remedio(DadosCadastroRemedio dados) {
+        this.ativo = true;
         this.nome = dados.nome();
         this.via = dados.via();
         this.lote = dados.lote();
@@ -38,6 +39,7 @@ public class Remedio {
     private LocalDate validade;
     @Enumerated(EnumType.STRING)
     private Laboratorio laboratorio;
+    private Boolean ativo;
 
     public void atualizarInformacoes(@Valid DadosAtualizarRemedio dados) {
         if (dados.nome() != null) {
@@ -51,6 +53,10 @@ public class Remedio {
         if (dados.laboratorio() != null) {
             this.laboratorio = dados.laboratorio();
         }
+    }
+
+    public void inativar() {
+        this.ativo = false;
     }
 
 }
