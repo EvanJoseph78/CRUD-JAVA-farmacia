@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
@@ -24,9 +25,13 @@ public class RemedioControler {
     @PostMapping
     @Transactional // evita perda de dados
 
-    public ResponseEntity<Void> cadastrar(@RequestBody @Valid DadosCadastroRemedio dados) {
-        repository.save(new Remedio(dados));
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<DadosDetalhamentoRemedio> cadastrar(@RequestBody @Valid DadosCadastroRemedio dados, UriComponentsBuilder uriBuilder) {
+        var remedio = new Remedio(dados);
+        repository.save(remedio);
+
+        var uri = uriBuilder.path("/remedios/{id}").buildAndExpand(remedio.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(new DadosDetalhamentoRemedio(remedio));
     }
 
     @GetMapping
@@ -44,6 +49,7 @@ public class RemedioControler {
     }
 
     @DeleteMapping("/{id}") // parâmetro dinâmico
+    @Transactional
     public ResponseEntity<Void> excluir(@PathVariable Long id) {
         repository.deleteById(id);
         return ResponseEntity.noContent().build();
@@ -64,6 +70,13 @@ public class RemedioControler {
         var remedio = repository.getReferenceById(id);
         remedio.reativar();
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}") // parâmetro dinâmico
+    public ResponseEntity<DadosDetalhamentoRemedio> detalhar(@PathVariable Long id) {
+        var remedio = repository.getReferenceById(id);
+
+        return ResponseEntity.ok(new DadosDetalhamentoRemedio(remedio));
     }
 
 }
